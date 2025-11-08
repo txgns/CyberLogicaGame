@@ -3,31 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Labirinto de Segurança – TechNova</title>
+  <title>Labirinto de Segurança – TechNova (build estável)</title>
   <style>
     :root{
       --bg:#0f1221; --panel:#171a2e; --panel-2:#0b0d1a; --text:#e8ecff; --muted:#b7c0ff;
-      --accent:#7ae0ff; --ok:#57f287; --bad:#ff6b6b; --warn:#ffd166;
+      --accent:#7ae0ff;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:radial-gradient(1200px 600px at 50% -200px,#1b2146 0%,#0f1221 45%,#090b14 100%);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
-
     .layout{display:grid;grid-template-rows:auto 1fr auto;min-height:100%}
     header{display:flex;gap:.75rem;align-items:center;padding:16px 20px;background:linear-gradient(180deg,#12162c,#0b0d1a);border-bottom:1px solid #1f2446}
     header h1{font-size:18px;margin:0;letter-spacing:.3px}
     header .badge{padding:4px 10px;border-radius:999px;background:rgba(122,224,255,.12);color:var(--accent);font-weight:600;font-size:12px;border:1px solid rgba(122,224,255,.35)}
-
     .hud{display:flex;gap:14px;align-items:center;margin-left:auto}
     .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid #2a2f58;background:#121733;border-radius:10px;min-height:30px}
     .chip b{font-size:14px}
-
     #gameWrap{display:grid;grid-template-columns:1fr 360px;gap:18px;padding:18px;max-width:1200px;margin:0 auto;width:100%}
-
     #viewport{position:relative;height:360px;border:1px solid #242a54;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#0e1331 0%,#0a0e24 60%,#060814 100%)}
     .ground{position:absolute;left:0;right:0;bottom:0;height:64px;background:linear-gradient(0deg,#0c1129,#0e1440);border-top:1px solid #25306e}
     .platform{position:absolute;bottom:64px;height:10px;background:linear-gradient(180deg,#2b3473,#1a2152);border:1px solid #3340a0;border-radius:6px}
     .platform::after{content:"";position:absolute;inset:-1px;border-radius:6px;box-shadow:0 6px 16px rgba(36,52,160,.35)}
-
     .entity{position:absolute;width:30px;height:30px;border-radius:6px}
     #player{background:linear-gradient(180deg,#66d1ff,#1e88ff);box-shadow:0 8px 18px rgba(30,136,255,.35)}
     .enemy{background:linear-gradient(180deg,#ff6b6b,#b32a2a);box-shadow:0 8px 18px rgba(255,107,107,.35);border:1px solid rgba(0,0,0,.2)}
@@ -35,15 +30,12 @@
     .turret{position:absolute;width:18px;height:26px;background:linear-gradient(180deg,#7ae0ff,#2d6cf0);border:1px solid #2445a0;border-radius:4px 4px 2px 2px;bottom:64px}
     .bullet{position:absolute;width:8px;height:4px;border-radius:2px;background:#e8ecff;box-shadow:0 0 10px rgba(232,236,255,.6)}
     .base{position:absolute;left:0;bottom:64px;width:22px;height:120px;background:linear-gradient(180deg,#223065,#121842);border-right:2px solid #3a4da0;border-top:1px solid #2a3a84;border-bottom:1px solid #2a3a84}
-
-    .msg{position:absolute;top:10px;left:10px;padding:6px 10px;background:rgba(0,0,0,.25);border:1px solid #2a325e;border-radius:8px;font-size:12px;color:var(--muted)}
-
+    .msg{position:absolute;top:10px;left:10px;padding:6px 10px;background:rgba(0,0,0,.25);border:1px solid #2a325e;border-radius:8px;font-size:12px;color:#b7c0ff}
     aside{border:1px solid #242a54;border-radius:14px;background:linear-gradient(180deg,#0f1436,#0c1030);padding:14px}
     .card{border:1px solid #2a2f58;border-radius:12px;background:#0d1232;padding:14px;margin-bottom:12px}
     .card h3{margin:0 0 6px;font-size:14px;color:#b7c0ff}
     .progress{height:8px;background:#141939;border-radius:999px;overflow:hidden}
     .progress>span{display:block;height:100%;background:linear-gradient(90deg,#3a8bff,#57f287);width:0%}
-
     .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(5,7,16,.85),rgba(6,8,20,.78));display:flex;align-items:center;justify-content:center;padding:20px 14px}
     .modal{max-width:860px;width:100%;background:linear-gradient(180deg,#111736,#0b0f26);border:1px solid #2a2f58;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
     .modal header{border-bottom:1px solid #25306e;padding:14px 16px;background:linear-gradient(180deg,#121733,#0e132e)}
@@ -51,22 +43,18 @@
     .modal .content{padding:16px}
     .modal p{margin:0 0 10px;line-height:1.5;color:#dbe2ff}
     .options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
-    button{cursor:pointer;border:1px solid #2a2f58;background:#121733;color:var(--text);padding:10px;border-radius:10px;font-weight:600}
+    button{cursor:pointer;border:1px solid #2a2f58;background:#121733;color:#e8ecff;padding:10px;border-radius:10px;font-weight:600}
     button:hover{background:#161d46}
-
     .toast{position:fixed;right:16px;bottom:16px;background:#121733;border:1px solid #2a2f58;border-radius:12px;padding:10px 12px;font-size:13px;color:#dbe2ff;box-shadow:0 10px 26px rgba(0,0,0,.35);opacity:0;transform:translateY(10px);transition:all .25s}
     .toast.show{opacity:1;transform:translateY(0)}
-
     footer{padding:10px 16px;color:#8e9afc;font-size:12px;border-top:1px solid #1f2446}
     a{color:#7ae0ff}
-
     .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:#9aa5ff}
     .legend span{display:inline-flex;align-items:center;gap:6px;border:1px solid #2a2f58;background:#121733;border-radius:999px;padding:4px 8px}
     .dot{width:10px;height:10px;border-radius:50%}
     .dot.player{background:#66d1ff}
     .dot.enemy{background:#ff6b6b}
     .dot.pick{background:#57f287}
-
     .tip{font-size:12px;color:#9aa5ff;margin-top:6px}
   </style>
 </head>
@@ -94,7 +82,7 @@
       <div class="platform" style="left:520px;width:120px;bottom:120px"></div>
 
       <div id="player" class="entity" style="left:40px;top:220px"></div>
-      <div class="msg" id="hint">Setas ou WASD para mover • Espaço para pular • Caia na cabeça do inimigo para derrotá‑lo</div>
+      <div class="msg" id="hint">Setas ou WASD para mover • Espaço para pular • Caia na cabeça do inimigo para derrotá-lo</div>
     </section>
 
     <aside>
@@ -157,346 +145,130 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ----------------------- DADOS DAS FASES -----------------------
 const STAGES = [
-  {
-    title: "1. Início – O Desafio",
-    text: "A empresa TechNova sofreu tentativas de invasão. Objetivo: terminar a missão com zero incidentes graves e dados protegidos.",
-    concept: "",
-    A: { label: "Ir sem plano (apertar o passo)", effect: { delta:-1, enemies:1, breach:false, note:"Decisão apressada: você começa vulnerável." } },
-    B: { label: "Assumir o controle da segurança", effect: { delta:+2, money:50, bonus:"Confiança da diretoria" } }
-  },
-  {
-    title: "2. Fundamentos e Análise de Riscos",
-    text: "Situação: o servidor está exposto à internet.",
-    concept: "Gestão de riscos e planejamento preventivo.",
-    A: { label: "Publicar direto na nuvem, sem restrições", effect: { delta:-3, enemies:3, breach:true, note:"Vazamento de dados! Você ignorou riscos." } },
-    B: { label: "Fazer análise de riscos antes da publicação", effect: { delta:+2, money:50, bonus:"Escudo de prevenção" } }
-  },
-  {
-    title: "3. Políticas e Planos de Segurança",
-    text: "Equipe solicita acesso total aos servidores.",
-    concept: "Menor privilégio, políticas e conformidade.",
-    A: { label: "Acesso irrestrito (mais rápido)", effect: { delta:-1, enemies:2, breach:false, note:"Credenciais expostas e contas comprometidas." } },
-    B: { label: "Política de senhas, perfis e controle de acesso", effect: { delta:+2, money:50 } }
-  },
-  {
-    title: "4. Auditoria e Normas",
-    text: "Cliente exige comprovação de conformidade.",
-    concept: "Auditoria, ISO 27001, NIST, LGPD.",
-    A: { label: "Ignorar normas (tem antivírus)", effect: { delta:-3, enemies:3, breach:true, note:"Penalidade por não conformidade e vazamento." } },
-    B: { label: "Implementar controles ISO 27001 e LGPD", effect: { delta:+2, money:50, bonus:"Selo de conformidade" } }
-  },
-  {
-    title: "5. Firewalls, IDS/IPS e Monitoramento",
-    text: "Tráfego suspeito vindo do exterior.",
-    concept: "Camadas de defesa e resposta a eventos.",
-    A: { label: "Abrir todas as portas", effect: { delta:-3, enemies:3, breach:true, note:"Invasão total — exploraram a porta 22." } },
-    B: { label: "Configurar firewall e IDS/IPS", effect: { delta:+2, money:50 } }
-  },
-  {
-    title: "6. Softwares Maliciosos",
-    text: "E‑mail de 'fatura urgente' chega ao financeiro.",
-    concept: "Engenharia social e conscientização.",
-    A: { label: "Abrir o anexo", effect: { delta:-3, enemies:3, breach:true, note:"Ransomware criptografou o servidor." } },
-    B: { label: "Treinar a equipe sobre phishing", effect: { delta:+2, money:50 } }
-  },
-  {
-    title: "7. Proteção de Aplicações Web",
-    text: "Site com formulários sem validação.",
-    concept: "WAF, validações e segurança web.",
-    A: { label: "Ignorar, ninguém vai invadir", effect: { delta:-3, enemies:3, breach:true, note:"SQL Injection roubou o banco." } },
-    B: { label: "Implementar filtros, WAF e segurança IP", effect: { delta:+2, money:50 } }
-  },
-  {
-    title: "8. Criptografia e Proteção de Dados",
-    text: "Dados de clientes sem criptografia.",
-    concept: "Confidencialidade e integridade.",
-    A: { label: "Armazenar em texto simples", effect: { delta:-3, enemies:3, breach:true, note:"Dados vazaram, multa da LGPD." } },
-    B: { label: "Criptografar e usar chaves seguras", effect: { delta:+2, money:50 } }
-  },
-  {
-    title: "9. Detecção e Resposta a Incidentes",
-    text: "IDS detecta anomalias.",
-    concept: "Detecção → contenção → erradicação → recuperação.",
-    A: { label: "Ignorar o alerta", effect: { delta:-3, enemies:3, breach:true, note:"Ataque escalou e paralisou serviços." } },
-    B: { label: "Acionar o plano de resposta a incidentes", effect: { delta:+2, money:50 } }
-  },
-  {
-    title: "10. Encerramento – Resultado",
-    text: "Soma dos pontos. 12–16: protegida • 8–11: em formação • <8: comprometida",
-    concept: "",
-    A: { label: "Reiniciar missão", effect: { delta:0 } },
-    B: { label: "Ver resultado", effect: { delta:0 } }
-  }
+  { title: "1. Início – O Desafio", text: "A empresa TechNova sofreu tentativas de invasão. Objetivo: terminar a missão com zero incidentes graves e dados protegidos.", concept: "", A: { label: "Ir sem plano (apertar o passo)", effect: { delta:-1, enemies:1, breach:false, note:"Decisão apressada: você começa vulnerável." } }, B: { label: "Assumir o controle da segurança", effect: { delta:+2, money:50, bonus:"Confiança da diretoria" } } },
+  { title: "2. Fundamentos e Análise de Riscos", text: "Situação: o servidor está exposto à internet.", concept: "Gestão de riscos e planejamento preventivo.", A: { label: "Publicar direto na nuvem, sem restrições", effect: { delta:-3, enemies:3, breach:true, note:"Vazamento de dados! Você ignorou riscos." } }, B: { label: "Fazer análise de riscos antes da publicação", effect: { delta:+2, money:50, bonus:"Escudo de prevenção" } } },
+  { title: "3. Políticas e Planos de Segurança", text: "Equipe solicita acesso total aos servidores.", concept: "Menor privilégio, políticas e conformidade.", A: { label: "Acesso irrestrito (mais rápido)", effect: { delta:-1, enemies:2, breach:false, note:"Credenciais expostas e contas comprometidas." } }, B: { label: "Política de senhas, perfis e controle de acesso", effect: { delta:+2, money:50 } } },
+  { title: "4. Auditoria e Normas", text: "Cliente exige comprovação de conformidade.", concept: "Auditoria, ISO 27001, NIST, LGPD.", A: { label: "Ignorar normas (tem antivírus)", effect: { delta:-3, enemies:3, breach:true, note:"Penalidade por não conformidade e vazamento." } }, B: { label: "Implementar controles ISO 27001 e LGPD", effect: { delta:+2, money:50, bonus:"Selo de conformidade" } } },
+  { title: "5. Firewalls, IDS/IPS e Monitoramento", text: "Tráfego suspeito vindo do exterior.", concept: "Camadas de defesa e resposta a eventos.", A: { label: "Abrir todas as portas", effect: { delta:-3, enemies:3, breach:true, note:"Invasão total — exploraram a porta 22." } }, B: { label: "Configurar firewall e IDS/IPS", effect: { delta:+2, money:50 } } },
+  { title: "6. Softwares Maliciosos", text: "E-mail de 'fatura urgente' chega ao financeiro.", concept: "Engenharia social e conscientização.", A: { label: "Abrir o anexo", effect: { delta:-3, enemies:3, breach:true, note:"Ransomware criptografou o servidor." } }, B: { label: "Treinar a equipe sobre phishing", effect: { delta:+2, money:50 } } },
+  { title: "7. Proteção de Aplicações Web", text: "Site com formulários sem validação.", concept: "WAF, validações e segurança web.", A: { label: "Ignorar, ninguém vai invadir", effect: { delta:-3, enemies:3, breach:true, note:"SQL Injection roubou o banco." } }, B: { label: "Implementar filtros, WAF e segurança IP", effect: { delta:+2, money:50 } } },
+  { title: "8. Criptografia e Proteção de Dados", text: "Dados de clientes sem criptografia.", concept: "Confidencialidade e integridade.", A: { label: "Armazenar em texto simples", effect: { delta:-3, enemies:3, breach:true, note:"Dados vazaram, multa da LGPD." } }, B: { label: "Criptografar e usar chaves seguras", effect: { delta:+2, money:50 } } },
+  { title: "9. Detecção e Resposta a Incidentes", text: "IDS detecta anomalias.", concept: "Detecção → contenção → erradicação → recuperação.", A: { label: "Ignorar o alerta", effect: { delta:-3, enemies:3, breach:true, note:"Ataque escalou e paralisou serviços." } }, B: { label: "Acionar o plano de resposta a incidentes", effect: { delta:+2, money:50 } } },
+  { title: "10. Encerramento – Resultado", text: "Soma dos pontos. 12–16: protegida • 8–11: em formação • <8: comprometida", concept: "", A: { label: "Reiniciar missão", effect: { delta:0 } }, B: { label: "Ver resultado", effect: { delta:0 } } }
 ];
 
-// ----------------------- ESTADO DO JOGO -----------------------
 const viewport = document.getElementById('viewport');
-const player = document.getElementById('player');
-const scoreEl = document.getElementById('score');
-const stageEl = document.getElementById('stage');
-const shieldsEl = document.getElementById('shields');
-const moneyEl = document.getElementById('money');
+const player   = document.getElementById('player');
+const scoreEl  = document.getElementById('score');
+const stageEl  = document.getElementById('stage');
+const shieldsEl= document.getElementById('shields');
+const moneyEl  = document.getElementById('money');
 const basehpEl = document.getElementById('basehp');
-const barEl = document.getElementById('bar');
-const overlay = document.getElementById('overlay');
-const ovTitle = document.getElementById('ov-title');
-const ovText = document.getElementById('ov-text');
-const ovConcept = document.getElementById('ov-concept');
-const optA = document.getElementById('optA');
-const optB = document.getElementById('optB');
-const toast = document.getElementById('toast');
-const base = document.getElementById('base');
+const barEl    = document.getElementById('bar');
+const overlay  = document.getElementById('overlay');
+const ovTitle  = document.getElementById('ov-title');
+const ovText   = document.getElementById('ov-text');
+const ovConcept= document.getElementById('ov-concept');
+const optA     = document.getElementById('optA');
+const optB     = document.getElementById('optB');
+const toast    = document.getElementById('toast');
+const base     = document.getElementById('base');
 
-let score = 0, stage = 0, shields = 0, money = 0, baseHP = 10;
+let score=0, stage=0, shields=0, money=0, baseHP=10;
 let keys = { left:false, right:false, up:false };
-let px = 40, py = 220, vx = 0, vy = 0; // posição do player
-let G = 0.8, JUMP = -12, SPEED = 3.2; // física mutável por upgrades
-let enemies = []; // inimigos atuais
-let enemyWaveRemaining = 0; // quantidade restante da onda
-let gameActive = true;
-let turrets = [];
-let bullets = [];
+let px=40, py=220, vx=0, vy=0;
+let G=0.8, JUMP=-12, SPEED=3.2;
+let enemies=[], enemyWaveRemaining=0, gameActive=true;
+let turrets=[], bullets=[];
 
-function showToast(text){
-  toast.textContent = text; toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'), 1600);
-}
-function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
-function resetPlayer(){ px = 40; py = 220; vx = 0; vy = 0; }
+function showToast(text){ toast.textContent=text; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),1600); }
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+function resetPlayer(){ px=40; py=220; vx=0; vy=0; }
 
-function spawnEnemy(){
-  const e = document.createElement('div');
-  e.className = 'entity enemy';
-  e.style.left = (viewport.clientWidth-40)+'px';
-  e.style.top = '210px';
-  e.dataset.vx = -1.6;
-  viewport.appendChild(e); enemies.push(e);
-}
+function spawnEnemy(){ const e=document.createElement('div'); e.className='entity enemy'; e.style.left=(viewport.clientWidth-40)+'px'; e.style.top='210px'; e.dataset.vx=-1.6; viewport.appendChild(e); enemies.push(e); }
 function clearEnemies(){ enemies.forEach(e=>e.remove()); enemies=[]; enemyWaveRemaining=0; }
-function pickupBonus(x,y){ const p=document.createElement('div'); p.className='pickup'; p.style.left=x+'px'; p.style.top=y+'px'; viewport.appendChild(p); setTimeout(()=>p.remove(), 1000); }
+function pickupBonus(x,y){ const p=document.createElement('div'); p.className='pickup'; p.style.left=x+'px'; p.style.top=y+'px'; viewport.appendChild(p); setTimeout(()=>p.remove(),1000); }
 
-function updateHUD(){
-  scoreEl.textContent = score; stageEl.textContent = `${Math.min(stage+1,10)}/10`; shieldsEl.textContent = shields;
-  barEl.style.width = `${(stage)/(STAGES.length-1)*100}%`;
-  moneyEl.textContent = `$${money}`;
-  basehpEl.textContent = baseHP;
-}
+function updateHUD(){ scoreEl.textContent=score; stageEl.textContent=`${Math.min(stage+1,10)}/10`; shieldsEl.textContent=shields; moneyEl.textContent=`$${money}`; basehpEl.textContent=baseHP; barEl.style.width=`${(stage)/(STAGES.length-1)*100}%`; }
 
 function presentStage(){
   const s = STAGES[stage];
-  ovTitle.textContent = s.title; ovText.textContent = s.text; ovConcept.textContent = s.concept || '';
-  optA.textContent = 'Opção A: ' + s.A.label; optB.textContent = 'Opção B: ' + s.B.label;
-  overlay.style.display = 'flex';
+  const order = Math.random()<0.5 ? ['A','B'] : ['B','A'];
+  ovTitle.textContent=s.title; ovText.textContent=s.text; ovConcept.textContent=s.concept||'';
+  optA.textContent=s[order[0]].label; optB.textContent=s[order[1]].label;
+  optA.onclick=()=>handleChoice(order[0]); optB.onclick=()=>handleChoice(order[1]);
+  overlay.style.display='flex';
 }
 
 function applyEffect(effect){
-  if(effect.delta) score += effect.delta;
-  if(effect.money){ money += effect.money; showToast(`Recompensa: +$${effect.money}`); }
-  if(effect.bonus){ shields += 1; pickupBonus(px+8, py-10); showToast("Bônus: "+effect.bonus); }
+  if(effect.delta) score+=effect.delta;
+  if(effect.money){ money+=effect.money; showToast(`Recompensa: +$${effect.money}`); }
+  if(effect.bonus){ shields+=1; pickupBonus(px+8, py-10); showToast("Bônus: "+effect.bonus); }
   if(effect.note) showToast(effect.note);
-  if(effect.enemies){ enemyWaveRemaining = effect.enemies; for(let i=0;i<effect.enemies;i++) setTimeout(spawnEnemy, 220*i); }
+  if(effect.enemies){ enemyWaveRemaining=effect.enemies; for(let i=0;i<effect.enemies;i++) setTimeout(spawnEnemy, 220*i); }
   updateHUD();
 }
 
-function nextStage(){
-  stage = Math.min(stage+1, STAGES.length-1);
-  updateHUD();
-  presentStage();
-}
+function nextStage(){ stage=Math.min(stage+1, STAGES.length-1); updateHUD(); presentStage(); }
 
-// ----------------------- CONTROLES -----------------------
-window.addEventListener('keydown', (e)=>{
-  const k = e.key;
-  const isMoveKey = ['ArrowLeft','ArrowRight','ArrowUp','a','A','d','D','w','W',' '].includes(k);
-  if(isMoveKey && getComputedStyle(overlay).display === 'none') e.preventDefault();
-  if(['ArrowLeft','a','A'].includes(k)) keys.left=true;
-  if(['ArrowRight','d','D'].includes(k)) keys.right=true;
-  if(['ArrowUp','w','W',' '].includes(k)) { keys.up=true; }
-});
-window.addEventListener('keyup', (e)=>{
-  const k = e.key;
-  if(['ArrowLeft','a','A'].includes(k)) keys.left=false;
-  if(['ArrowRight','d','D'].includes(k)) keys.right=false;
-  if(['ArrowUp','w','W',' '].includes(k)) { keys.up=false; }
-});
+window.addEventListener('keydown', (e)=>{ const k=e.key; const isMoveKey=['ArrowLeft','ArrowRight','ArrowUp','a','A','d','D','w','W',' '].includes(k); if(isMoveKey && getComputedStyle(overlay).display==='none') e.preventDefault(); if(['ArrowLeft','a','A'].includes(k)) keys.left=true; if(['ArrowRight','d','D'].includes(k)) keys.right=true; if(['ArrowUp','w','W',' '].includes(k)) keys.up=true; });
+window.addEventListener('keyup', (e)=>{ const k=e.key; if(['ArrowLeft','a','A'].includes(k)) keys.left=false; if(['ArrowRight','d','D'].includes(k)) keys.right=false; if(['ArrowUp','w','W',' '].includes(k)) keys.up=false; });
 
-// ----------------------- TORRE / TIROS -----------------------
-function placeTurret(x,y){
-  const t = document.createElement('div'); t.className='turret'; t.style.left=x+'px'; t.style.top=y+'px';
-  viewport.appendChild(t); turrets.push({el:t,x,y,cool:0});
-}
-function shootFrom(t){
-  const b=document.createElement('div'); b.className='bullet';
-  const y=t.y+10; const x=t.x+18;
-  b.style.top=y+'px'; b.style.left=x+'px';
-  viewport.appendChild(b);
-  bullets.push({el:b,x:x,y:y,vx:4.2});
-}
+function placeTurret(x,y){ const t=document.createElement('div'); t.className='turret'; t.style.left=x+'px'; t.style.top=y+'px'; viewport.appendChild(t); turrets.push({el:t,x,y,cool:0}); }
+function shootFrom(t){ const b=document.createElement('div'); b.className='bullet'; const y=t.y+10, x=t.x+18; b.style.top=y+'px'; b.style.left=x+'px'; viewport.appendChild(b); bullets.push({el:b,x:x,y:y,vx:4.2}); }
 setInterval(()=>{ turrets.forEach(t=>shootFrom(t)); }, 900);
 
-function gameOver(){
-  gameActive=false;
-  overlay.style.display='flex';
-  ovTitle.textContent='Base destruída';
-  ovText.textContent=`Sua base caiu. Pontos: ${score}. Dinheiro: $${money}. Tente novamente!`;
-  ovConcept.textContent='';
-  optA.textContent='Reiniciar'; optB.textContent='Fechar';
-  optA.onclick=()=>{ location.reload(); };
-  optB.onclick=()=>{ overlay.style.display='none'; };
-}
+function clearTurrets(){ turrets.forEach(t=>t.el.remove()); turrets=[]; }
+function resetGame(){ clearEnemies(); clearTurrets(); bullets.forEach(b=>b.el.remove()); bullets=[]; score=0; shields=0; money=0; baseHP=10; stage=0; enemyWaveRemaining=0; gameActive=true; resetPlayer(); updateHUD(); presentStage(); requestAnimationFrame(gameLoop); }
+function loseByTurret(){ showToast('Sua torre foi destruída! Reiniciando...'); setTimeout(()=>resetGame(),700); }
+function loseByBase(){ showToast('A EMPRESA foi atingida! Reiniciando...'); setTimeout(()=>resetGame(),700); }
 
-function clearTurrets(){
-  turrets.forEach(t=> t.el.remove());
-  turrets = [];
-}
-
-function resetGame(){
-  // limpa tudo e volta para a fase 1
-  clearEnemies();
-  clearTurrets();
-  bullets.forEach(b=> b.el.remove());
-  bullets = [];
-  score=0; shields=0; money=0; baseHP=10; stage=0; gameActive=true;
-  resetPlayer();
-  updateHUD();
-  presentStage();
-}
-
-function loseByTurret(){
-  showToast('Sua torre foi destruída! Reiniciando...');
-  setTimeout(()=>{ resetGame(); }, 700);
-}
-
-function loseByBase(){
-  showToast('A EMPRESA (torre/base) foi atingida! Reiniciando...');
-  setTimeout(()=>{ resetGame(); }, 700);
-}
-
-// ----------------------- GAME LOOP -----------------------
 function gameLoop(){
   if(!gameActive) return;
-  // movimento horizontal
-  vx = (keys.left?-SPEED:0) + (keys.right?SPEED:0);
-  px += vx; px = clamp(px, 4, viewport.clientWidth-34);
+  vx=(keys.left?-SPEED:0)+(keys.right?SPEED:0); px+=vx; px=clamp(px,4,viewport.clientWidth-34);
+  const plats=[...document.querySelectorAll('.platform')]; let groundY=viewport.clientHeight-64-30; let supportY=groundY, onGround=false;
+  for(const p of plats){ const rect=p.getBoundingClientRect(), vr=viewport.getBoundingClientRect(); const x=rect.left-vr.left, y=rect.top-vr.top, w=rect.width; if(px+30>x&&px<x+w&&py+30<=y&&y-30<supportY) supportY=y-30; }
+  if(py>=supportY){ onGround=true; py=supportY; vy=0; } if(keys.up&&onGround){ vy=JUMP; onGround=false; } vy+=G; py+=vy; if(py>supportY){ py=supportY; vy=0; }
+  player.style.left=px+'px'; player.style.top=py+'px';
 
-  // gravidade e plataformas
-  const plats = Array.from(document.querySelectorAll('.platform'));
-  let groundY = viewport.clientHeight-64-30; // topo do player quando no chão
-  let supportY = groundY; let onGround = false;
-  for(const p of plats){
-    const rect = p.getBoundingClientRect(); const vr = viewport.getBoundingClientRect();
-    const x = rect.left - vr.left; const y = rect.top - vr.top; const w = rect.width;
-    if(px+30> x && px < x+w && py+30 <= y && y-30 < supportY) supportY = y-30;
-  }
-  if(py >= supportY){ onGround = true; py = supportY; vy = 0; }
-  if(keys.up && onGround){ vy = JUMP; onGround=false; }
-  vy += G; py += vy; if(py>supportY){ py=supportY; vy=0; }
-
-  player.style.left = px+"px"; player.style.top = py+"px";
-
-  // inimigos avançando para a base
   enemies.forEach((e,i)=>{
-    let ex = parseFloat(e.style.left); let ey = parseFloat(e.style.top); let evx = parseFloat(e.dataset.vx||-1.6);
-    if(enemyWaveRemaining>0){ ex += evx; } else { ex += evx; if(ex<6 || ex>viewport.clientWidth-36){ evx *= -1; } }
-    e.dataset.vx = evx; e.style.left = ex+"px";
-
-    // alcançou a base?
-    if(ex <= 12){
-      // contato com a EMPRESA deve causar derrota imediata e reset
-      // também desconta 1 da onda para evitar travar progresso em futuras lógicas
-      enemyWaveRemaining = Math.max(0, enemyWaveRemaining - 1);
-      e.remove(); enemies.splice(i,1);
-      loseByBase();
-      return;
-    }
-
-    // colidiu com alguma torre? perda imediata e reset
-    for(const t of turrets){
-      const tx=t.x, ty=t.y, tw=18, th=26;
-      if(!(ex+30 < tx || ex > tx+tw || ey+30 < ty || ey > ty+th)){
-        loseByTurret();
-        return; // interrompe processamento deste inimigo
-      }
-    }
-
-    // colisão com jogador
-    const hit = !(px+30 < ex || px > ex+30 || py+30 < ey || py > ey+30);
-    const stomp = (vy>1 && py+30 >= ey && py+20 <= ey);
-    if(hit){
-      if(stomp){
-        vy = JUMP*0.55;
-        e.remove(); enemies.splice(i,1); enemyWaveRemaining = Math.max(0, enemyWaveRemaining-1);
-        score += 1; money += 5; updateHUD(); pickupBonus(ex+8, ey-8);
-        if(enemyWaveRemaining===0 && stage<STAGES.length-1){ setTimeout(()=>{ showToast('Onda controlada. Avance.'); nextStage(); }, 600); }
-      } else {
-        if(shields>0){ shields -= 1; showToast('Escudo absorveu o dano.'); }
-        else { score -= 1; showToast('Você sofreu dano (−1).'); }
-        updateHUD(); resetPlayer();
-      }
-    }
+    let ex=parseFloat(e.style.left), ey=parseFloat(e.style.top), evx=parseFloat(e.dataset.vx||-1.6);
+    ex+=evx; if(enemyWaveRemaining<=0){ if(ex<6||ex>viewport.clientWidth-36) evx*=-1; } e.dataset.vx=evx; e.style.left=ex+'px';
+    if(ex<=12){ enemyWaveRemaining=Math.max(0,enemyWaveRemaining-1); e.remove(); enemies.splice(i,1); loseByBase(); return; }
+    for(const t of turrets){ const tx=t.x,ty=t.y,tw=18,th=26; if(!(ex+30<tx||ex>tx+tw||ey+30<ty||ey>ty+th)){ loseByTurret(); return; } }
+    const hit=!(px+30<ex||px>ex+30||py+30<ey||py>ey+30); const stomp=(vy>1&&py+30>=ey&&py+20<=ey);
+    if(hit){ if(stomp){ vy=JUMP*0.55; e.remove(); enemies.splice(i,1); enemyWaveRemaining=Math.max(0,enemyWaveRemaining-1); score+=1; money+=5; updateHUD(); pickupBonus(ex+8,ey-8); if(enemyWaveRemaining===0&&stage<STAGES.length-1){ setTimeout(()=>{ showToast('Onda controlada. Avance.'); nextStage(); },600); } } else { if(shields>0){ shields-=1; showToast('Escudo absorveu o dano.'); } else { score-=1; showToast('Você sofreu dano (−1).'); } updateHUD(); resetPlayer(); } }
   });
 
-  // balas
-  bullets.forEach((b,bi)=>{
-    b.x += b.vx; b.el.style.left = b.x + 'px';
-    enemies.forEach((e,ei)=>{
-      const ex=parseFloat(e.style.left), ey=parseFloat(e.style.top);
-      if(!(b.x+8<ex||b.x>ex+30||b.y+4<ey||b.y>ey+30)){
-        e.remove(); enemies.splice(ei,1); enemyWaveRemaining=Math.max(0, enemyWaveRemaining-1);
-        b.el.remove(); bullets.splice(bi,1);
-        score += 1; money += 5; updateHUD();
-        if(enemyWaveRemaining===0 && stage<STAGES.length-1){ setTimeout(()=>{ showToast('Onda controlada. Avance.'); nextStage(); }, 600); }
-      }
-    });
-    if(b.x>viewport.clientWidth){ b.el.remove(); bullets.splice(bi,1); }
-  });
+  bullets.forEach((b,bi)=>{ b.x+=b.vx; b.el.style.left=b.x+'px'; enemies.forEach((e,ei)=>{ const ex=parseFloat(e.style.left), ey=parseFloat(e.style.top); if(!(b.x+8<ex||b.x>ex+30||b.y+4<ey||b.y>ey+30)){ e.remove(); enemies.splice(ei,1); enemyWaveRemaining=Math.max(0,enemyWaveRemaining-1); b.el.remove(); bullets.splice(bi,1); score+=1; money+=5; updateHUD(); if(enemyWaveRemaining===0&&stage<STAGES.length-1){ setTimeout(()=>{ showToast('Onda controlada. Avance.'); nextStage(); },600); } } }); if(b.x>viewport.clientWidth){ b.el.remove(); bullets.splice(bi,1); } });
 
   requestAnimationFrame(gameLoop);
 }
 
-// ----------------------- DECISÕES -----------------------
+function applyEffectAndMaybeSpawn(eff){ applyEffect(eff); if(eff.enemies || eff.delta<0){ /* onda já criada por applyEffect */ } else if(eff && !('enemies' in eff)){ enemyWaveRemaining=1; spawnEnemy(); } }
+
 function handleChoice(which){
-  const s = STAGES[stage];
-  const eff = s[which].effect || {};
-  overlay.style.display = 'none';
-
+  const s=STAGES[stage]; const eff=s[which].effect||{}; overlay.style.display='none';
   if(stage===STAGES.length-1){
-    if(which==='A'){
-      score = 0; shields = 0; stage = 0; money=0; baseHP=10; clearEnemies(); resetPlayer(); updateHUD(); presentStage(); return; }
-    if(which==='B'){
-      const total = score; const verdict = total>=12? 'Empresa protegida' : (total>=8? 'Analista em formação' : 'Empresa comprometida');
-      setTimeout(()=>{ overlay.style.display='flex'; ovTitle.textContent='Fim da Missão'; ovText.textContent=`Pontuação final: ${total}. Resultado: ${verdict}. Dinheiro: $${money}.`; ovConcept.textContent='Obrigado por jogar!'; optA.textContent='Reiniciar'; optB.textContent='Fechar'; }, 250);
-      optA.onclick = ()=>{ score=0; shields=0; stage=0; money=0; baseHP=10; clearEnemies(); resetPlayer(); updateHUD(); presentStage(); };
-      optB.onclick = ()=>{ overlay.style.display='none'; };
-      return;
-    }
+    if(which==='A'){ resetGame(); return; }
+    if(which==='B'){ const total=score; const verdict= total>=12?'Empresa protegida':(total>=8?'Analista em formação':'Empresa comprometida'); setTimeout(()=>{ overlay.style.display='flex'; ovTitle.textContent='Fim da Missão'; ovText.textContent=`Pontuação final: ${total}. Resultado: ${verdict}. Dinheiro: $${money}.`; ovConcept.textContent='Obrigado por jogar!'; optA.textContent='Reiniciar'; optB.textContent='Fechar'; optA.onclick=()=>resetGame(); optB.onclick=()=>{ overlay.style.display='none'; }; },250); return; }
   }
-
   applyEffect(eff);
-  const risky = (which==='A');
-  if(!risky){ setTimeout(()=>{ nextStage(); }, 420); }
-  else { if(!eff.enemies){ enemyWaveRemaining = 1; spawnEnemy(); } }
+  const risky=(which==='A');
+  if(!risky){ setTimeout(()=>nextStage(),420); } else { if(!eff.enemies){ enemyWaveRemaining=1; spawnEnemy(); } }
 }
 
-optA.onclick = ()=>handleChoice('A');
-optB.onclick = ()=>handleChoice('B');
+const buySpeed=document.getElementById('buySpeed');
+const buyJump=document.getElementById('buyJump');
+const buyTurret=document.getElementById('buyTurret');
+const buyShield=document.getElementById('buyShield');
+function tryBuy(cost,fn){ if(money<cost){ showToast('Dinheiro insuficiente.'); return; } money-=cost; updateHUD(); fn(); }
+buySpeed.onclick = ()=>tryBuy(60, ()=>{ SPEED+=0.8; showToast('Velocidade melhorada!'); });
+buyJump.onclick  = ()=>tryBuy(60, ()=>{ JUMP-=2;   showToast('Pulo melhorado!'); });
+buyShield.onclick= ()=>tryBuy(40, ()=>{ shields+=1; updateHUD(); showToast('Escudo adquirido.'); });
+buyTurret.onclick= ()=>tryBuy(120,()=>{ placeTurret(120, viewport.clientHeight-64-26); showToast('Torre instalada.'); });
 
-// ----------------------- LOJA -----------------------
-const buySpeed = document.getElementById('buySpeed');
-const buyJump = document.getElementById('buyJump');
-const buyTurret = document.getElementById('buyTurret');
-const buyShield = document.getElementById('buyShield');
-
-function tryBuy(cost, fn){ if(money < cost){ showToast('Dinheiro insuficiente.'); return; } money -= cost; updateHUD(); fn(); }
-
-buySpeed.onclick = ()=> tryBuy(60, ()=>{ SPEED += 0.8; showToast('Velocidade melhorada!'); });
-buyJump.onclick  = ()=> tryBuy(60, ()=>{ JUMP -= 2; showToast('Pulo melhorado!'); });
-buyShield.onclick= ()=> tryBuy(40, ()=>{ shields += 1; updateHUD(); showToast('Escudo adquirido.'); });
-buyTurret.onclick= ()=> tryBuy(120, ()=>{ placeTurret(120, viewport.clientHeight-64-26); showToast('Torre instalada.'); });
-
-// ----------------------- START -----------------------
 updateHUD(); presentStage(); requestAnimationFrame(gameLoop);
 </script>
 </body>
