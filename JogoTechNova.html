@@ -338,13 +338,40 @@ setInterval(()=>{ turrets.forEach(t=>shootFrom(t)); }, 900);
 
 function gameOver(){
   gameActive=false;
-  overlay.style.display='plac e' ? 'flex' : 'flex'; // keep overlay visible
+  overlay.style.display='flex';
   ovTitle.textContent='Base destruída';
   ovText.textContent=`Sua base caiu. Pontos: ${score}. Dinheiro: $${money}. Tente novamente!`;
   ovConcept.textContent='';
   optA.textContent='Reiniciar'; optB.textContent='Fechar';
   optA.onclick=()=>{ location.reload(); };
   optB.onclick=()=>{ overlay.style.display='none'; };
+}
+
+function clearTurrets(){
+  turrets.forEach(t=> t.el.remove());
+  turrets = [];
+}
+
+function resetGame(){
+  // limpa tudo e volta para a fase 1
+  clearEnemies();
+  clearTurrets();
+  bullets.forEach(b=> b.el.remove());
+  bullets = [];
+  score=0; shields=0; money=0; baseHP=10; stage=0; gameActive=true;
+  resetPlayer();
+  updateHUD();
+  presentStage();
+}
+
+function loseByTurret(){
+  showToast('Sua torre foi destruída! Reiniciando...');
+  setTimeout(()=>{ resetGame(); }, 700);
+}
+
+function loseByBase(){
+  showToast('A EMPRESA (torre/base) foi atingida! Reiniciando...');
+  setTimeout(()=>{ resetGame(); }, 700);
 }
 
 // ----------------------- GAME LOOP -----------------------
@@ -377,10 +404,21 @@ function gameLoop(){
 
     // alcançou a base?
     if(ex <= 12){
-      baseHP -= 1; updateHUD(); showToast('A base sofreu dano!');
+      // contato com a EMPRESA deve causar derrota imediata e reset
+      // também desconta 1 da onda para evitar travar progresso em futuras lógicas
+      enemyWaveRemaining = Math.max(0, enemyWaveRemaining - 1);
       e.remove(); enemies.splice(i,1);
-      if(baseHP<=0){ gameOver(); }
+      loseByBase();
       return;
+    }
+
+    // colidiu com alguma torre? perda imediata e reset
+    for(const t of turrets){
+      const tx=t.x, ty=t.y, tw=18, th=26;
+      if(!(ex+30 < tx || ex > tx+tw || ey+30 < ty || ey > ty+th)){
+        loseByTurret();
+        return; // interrompe processamento deste inimigo
+      }
     }
 
     // colisão com jogador
