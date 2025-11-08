@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TechNova — Labirinto de Segurança</title>
+  <title>TechNova — Labirinto de Segurança (Loja + Pause entre fases)</title>
   <style>
     :root{
       --bg:#0f1221; --panel:#171a2e; --panel-2:#0b0d1a; --text:#e8ecff; --muted:#b7c0ff;
@@ -42,6 +42,7 @@
     .progress{height:8px;background:#141939;border-radius:999px;overflow:hidden}
     .progress>span{display:block;height:100%;background:linear-gradient(90deg,#3a8bff,#57f287);width:0%}
     .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(5,7,16,.85),rgba(6,8,20,.78));display:flex;align-items:center;justify-content:center;padding:20px 14px}
+    .overlay.hidden{display:none}
     .modal{max-width:860px;width:100%;background:linear-gradient(180deg,#111736,#0b0f26);border:1px solid #2a2f58;border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
     .modal header{border-bottom:1px solid #25306e;padding:14px 16px;background:linear-gradient(180deg,#121733,#0e132e)}
     .modal h2{margin:0;font-size:18px}
@@ -53,20 +54,23 @@
     .toast{position:fixed;right:16px;bottom:16px;background:#121733;border:1px solid #2a2f58;border-radius:12px;padding:10px 12px;font-size:13px;color:#dbe2ff;box-shadow:0 10px 26px rgba(0,0,0,.35);opacity:0;transform:translateY(10px);transition:all .25s}
     .toast.show{opacity:1;transform:translateY(0)}
     footer{padding:10px 16px;color:#8e9afc;font-size:12px;border-top:1px solid #1f2446}
+    .shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .shop-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
   </style>
 </head>
 <body>
 <div class="layout">
   <header>
     <span class="badge">TechNova • Labirinto de Segurança</span>
-    <h1>UNIFICADO — Perguntas + Waves + Torres por Clique + Fix Velocidade</h1>
+    <h1>Loja + Inventário + Pausa entre fases</h1>
     <div class="hud">
       <div class="chip">Pontuação: <b id="score">0</b></div>
       <div class="chip">Fase: <b id="stage">1/10</b></div>
       <div class="chip">Escudos: <b id="shields">0</b></div>
       <div class="chip">Dinheiro: <b id="money">$0</b></div>
       <div class="chip">Base: <b id="basehp">10</b></div>
-      <div class="chip">Torres para colocar: <b id="invCount">0</b></div>
+      <div class="chip">Torres: <b id="invCount">0</b></div>
+      <button id="openShop" style="margin-left:10px">Abrir Loja (P)</button>
     </div>
   </header>
 
@@ -85,18 +89,9 @@
 
     <aside>
       <div class="card">
-        <h3>Loja</h3>
-        <div style="display:grid;gap:8px">
-          <button id="buySpeed">Velocidade (+0.8) – $60</button>
-          <button id="buyJump">Pulo (+2) – $60</button>
-          <button id="buyShield">Escudo (+1) – $40</button>
-          <button id="buyTurret">Comprar Torre (inventário +1) – $120</button>
-        </div>
-        <p style="color:#b7c0ff;font-size:12px;margin-top:8px">As torres são posicionadas com o mouse. Evite colar na EMPRESA.</p>
-      </div>
-      <div class="card">
         <h3>Progresso</h3>
         <div class="progress"><span id="bar" style="width:0%"></span></div>
+        <p style="color:#b7c0ff;font-size:12px">Após cada etapa/wave, o jogo entra em <b>Pausa</b> para compras e posicionamento.</p>
       </div>
       <div class="card">
         <h3>Resultados</h3>
@@ -106,12 +101,12 @@
   </main>
 
   <footer>
-    © 2025 TechNova. Controles: ← → / A D para mover, ↑ / W / Espaço para pular. Clique no campo para posicionar torres (se tiver no inventário).
+    © 2025 TechNova. Controles: ← → / A D para mover, ↑ / W / Espaço para pular. Clique no campo para posicionar torres (se tiver no inventário). Tecla P abre a loja.
   </footer>
 </div>
 
-<!-- Overlays -->
-<div class="overlay" id="overlay" aria-modal="true" role="dialog" style="display:none">
+<!-- Overlay de PERGUNTAS -->
+<div class="overlay" id="overlay" aria-modal="true" role="dialog">
   <div class="modal" role="document">
     <header><h2 id="ov-title">Início – O Desafio</h2></header>
     <div class="content">
@@ -124,10 +119,33 @@
     </div>
   </div>
 </div>
+
+<!-- Overlay de LOJA/INVENTÁRIO -->
+<div class="overlay hidden" id="shop" aria-modal="true" role="dialog">
+  <div class="modal" role="document">
+    <header><h2>Loja & Inventário</h2></header>
+    <div class="content">
+      <p>Dinheiro: <b id="moneyShop">$0</b> • Escudos: <b id="shieldsShop">0</b> • Torres no inventário: <b id="invShop">0</b></p>
+      <div class="shop-grid">
+        <button id="buySpeed">Velocidade (+0.8) – $60</button>
+        <button id="buyJump">Pulo (+2) – $60</button>
+        <button id="buyShield">Escudo (+1) – $40</button>
+        <button id="buyTurret">Comprar Torre (inventário +1) – $120</button>
+        <button id="equipTurret">Colocar Torre agora</button>
+        <button id="closeShop">Continuar Jogando</button>
+      </div>
+      <div class="shop-footer">
+        <button id="nextStageBtn" class="primary" style="display:none">Avançar para a próxima etapa</button>
+      </div>
+      <p class="tip" style="margin-top:10px">Dica: após clicar em <b>Colocar Torre</b>, clique no campo de jogo para posicionar (não muito perto da EMPRESA).</p>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// ----------------------- CONSTANTES BASE (fix velocidade/jump) -----------------------
+// ----------------------- CONSTANTES -----------------------
 const BASE_SPEED = 3.2;
 const BASE_JUMP  = -12;
 const G = 0.8;
@@ -212,6 +230,12 @@ const ovText   = document.getElementById('ov-text');
 const ovConcept= document.getElementById('ov-concept');
 const optA     = document.getElementById('optA');
 const optB     = document.getElementById('optB');
+const shop     = document.getElementById('shop');
+const moneyShop= document.getElementById('moneyShop');
+const shieldsShop= document.getElementById('shieldsShop');
+const invShop  = document.getElementById('invShop');
+const nextStageBtn = document.getElementById('nextStageBtn');
+const openShopBtn  = document.getElementById('openShop');
 const toast    = document.getElementById('toast');
 
 let score=0, stage=0, shields=0, money=0, baseHP=10;
@@ -223,8 +247,11 @@ let enemies=[], enemyWaveRemaining=0, gameActive=true;
 let turrets=[], bullets=[];
 let turretInventory=0;
 let loopRunning=false, rafId=null;
+let paused=false;
+let pendingNextStage=false;
+let placingTurretMode=false;
 
-// Tipo de inimigo
+// Tipos de inimigos
 const ENEMY_TYPES = {
   fast:  { hp:1,  vx:-2.6, y:210, reward:5, class:'fast' },
   tank:  { hp:3,  vx:-1.2, y:210, reward:8, class:'tank' },
@@ -242,6 +269,9 @@ function updateHUD(){
   basehpEl.textContent=baseHP;
   invEl.textContent=turretInventory;
   barEl.style.width=`${(stage)/(STAGES.length-1)*100}%`;
+  moneyShop.textContent=`$${money}`;
+  shieldsShop.textContent=shields;
+  invShop.textContent=turretInventory;
 }
 
 // ----------------------- Waves -----------------------
@@ -287,6 +317,7 @@ function presentStage(){
   optB.textContent = s[order[1]].label;
   optA.onclick = ()=>handleChoice(order[0]);
   optB.onclick = ()=>handleChoice(order[1]);
+  overlay.classList.remove('hidden');
   overlay.style.display='flex';
 }
 
@@ -311,8 +342,9 @@ function nextStage(){
 // ----------------------- Input -----------------------
 window.addEventListener('keydown', (e)=>{
   const k=e.key;
+  if(k==='p' || k==='P'){ toggleShopPause(false); return; }
   const isMove=['ArrowLeft','ArrowRight','ArrowUp','a','A','d','D','w','W',' '].includes(k);
-  if(isMove && getComputedStyle(overlay).display==='none') e.preventDefault();
+  if(isMove && overlay.classList.contains('hidden')) e.preventDefault();
   if(['ArrowLeft','a','A'].includes(k)) keys.left=true;
   if(['ArrowRight','d','D'].includes(k)) keys.right=true;
   if(['ArrowUp','w','W',' '].includes(k)) keys.up=true;
@@ -326,13 +358,14 @@ window.addEventListener('keyup', (e)=>{
 
 // Posicionar torres com clique
 viewport.addEventListener('click', (e)=>{
-  if(turretInventory<=0) return;
+  if(!placingTurretMode) return;
+  if(turretInventory<=0){ showToast('Sem torres no inventário'); placingTurretMode=false; return; }
   const vr = viewport.getBoundingClientRect();
   const x = e.clientX - vr.left;
   const y = viewport.clientHeight - 64 - 26;
   if(x < 40) { showToast('Muito perto da EMPRESA. Posicione mais à direita.'); return; }
   placeTurret(Math.min(Math.max(x-9, 40), viewport.clientWidth-30), y);
-  turretInventory--; updateHUD();
+  turretInventory--; placingTurretMode=false; updateHUD();
 });
 
 // ----------------------- Torres / Tiros -----------------------
@@ -341,6 +374,7 @@ function placeTurret(x,y){
   viewport.appendChild(t); turrets.push({el:t,x,y,cool:0});
 }
 function shootFrom(t){
+  if(paused) return;
   const b=document.createElement('div'); b.className='bullet';
   const y=t.y+10, x=t.x+18;
   b.style.top=y+'px'; b.style.left=x+'px';
@@ -354,9 +388,8 @@ function pickupBonus(x,y){ const p=document.createElement('div'); p.className='p
 
 function clearTurrets(){ turrets.forEach(t=>t.el.remove()); turrets=[]; }
 function resetGame(){
-  // reset completo e restaura atributos base (fix velocidade)
   if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
-  loopRunning=false;
+  loopRunning=false; paused=false; pendingNextStage=false; placingTurretMode=false;
   clearEnemies(); clearTurrets();
   bullets.forEach(b=>b.el.remove()); bullets=[];
   score=0; shields=0; money=0; baseHP=10; stage=0; enemyWaveRemaining=0; gameActive=true; turretInventory=0;
@@ -366,95 +399,130 @@ function resetGame(){
 function loseByTurret(){ showToast('Sua torre foi destruída! Reiniciando...'); setTimeout(()=>resetGame(),700); }
 function loseByBase(){ showToast('A EMPRESA foi atingida! Reiniciando...'); setTimeout(()=>resetGame(),700); }
 
-// ----------------------- Loop (guard) -----------------------
+// ----------------------- Pause/Shop -----------------------
+function toggleShopPause(nextStageAfterClose){
+  paused = !paused;
+  pendingNextStage = !!nextStageAfterClose;
+  if(paused){
+    shop.classList.remove('hidden'); shop.style.display='flex';
+    moneyShop.textContent=`$${money}`; shieldsShop.textContent=shields; invShop.textContent=turretInventory;
+    nextStageBtn.style.display = pendingNextStage ? 'inline-flex' : 'none';
+  }else{
+    shop.style.display='none'; shop.classList.add('hidden');
+    if(pendingNextStage){
+      pendingNextStage=false;
+      presentStage();
+    }
+  }
+}
+document.getElementById('closeShop').onclick = ()=> toggleShopPause(false);
+document.getElementById('equipTurret').onclick = ()=>{ placingTurretMode=true; showToast('Clique no campo para posicionar a torre'); };
+document.getElementById('nextStageBtn').onclick = ()=> toggleShopPause(true);
+openShopBtn.onclick = ()=> toggleShopPause(false);
+
+// ----------------------- Loop (guard + pause) -----------------------
 function startLoop(){
   if(loopRunning) return;
   loopRunning=true;
   const step = ()=>{
-    // movimento
-    vx = (keys.left?-SPEED:0) + (keys.right?SPEED:0);
-    px += vx; px = clamp(px, 4, viewport.clientWidth-34);
+    // pulo de lógica quando em pausa (mantém render loop)
+    if(!paused){
+      // movimento
+      vx = (keys.left?-SPEED:0) + (keys.right?SPEED:0);
+      px += vx; px = clamp(px, 4, viewport.clientWidth-34);
 
-    // gravidade/plataformas
-    const plats = Array.from(document.querySelectorAll('.platform'));
-    let groundY = viewport.clientHeight-64-30;
-    let supportY = groundY, onGround=false;
-    for(const p of plats){
-      const rect=p.getBoundingClientRect(), vr=viewport.getBoundingClientRect();
-      const x=rect.left-vr.left, y=rect.top-vr.top, w=rect.width;
-      if(px+30>x && px<x+w && py+30<=y && y-30<supportY) supportY=y-30;
-    }
-    if(py>=supportY){ onGround=true; py=supportY; vy=0; }
-    if(keys.up && onGround){ vy=JUMP; onGround=false; }
-    vy += G; py += vy; if(py>supportY){ py=supportY; vy=0; }
-
-    player.style.left=px+'px'; player.style.top=py+'px';
-
-    // inimigos
-    enemies.forEach((o,idx)=>{
-      o.x += o.vx;
-      o.el.style.left = o.x+'px';
-
-      const fill = o.el.querySelector('.hpbar>span');
-      if(fill){ fill.style.width = Math.max(0, (o.hp/o.maxhp*100))+'%'; }
-
-      // base
-      if(o.x <= 12){
-        enemyWaveRemaining = Math.max(0, enemyWaveRemaining-1);
-        o.el.remove(); enemies.splice(idx,1);
-        loseByBase(); return;
+      // gravidade/plataformas
+      const plats = Array.from(document.querySelectorAll('.platform'));
+      let groundY = viewport.clientHeight-64-30;
+      let supportY = groundY, onGround=false;
+      for(const p of plats){
+        const rect=p.getBoundingClientRect(), vr=viewport.getBoundingClientRect();
+        const x=rect.left-vr.left, y=rect.top-vr.top, w=rect.width;
+        if(px+30>x && px<x+w && py+30<=y && y-30<supportY) supportY=y-30;
       }
+      if(py>=supportY){ onGround=true; py=supportY; vy=0; }
+      if(keys.up && onGround){ vy=JUMP; onGround=false; }
+      vy += G; py += vy; if(py>supportY){ py=supportY; vy=0; }
 
-      // torre
-      for(const t of turrets){
-        const tx=t.x, ty=t.y, tw=18, th=26;
-        const ex=o.x, ey=o.y;
-        if(!(ex+30<tx || ex>tx+tw || ey+30<ty || ey>ty+th)){ loseByTurret(); return; }
-      }
+      // aplicar no DOM
+      player.style.left=px+'px'; player.style.top=py+'px';
 
-      // jogador
-      const ex=o.x, ey=o.y;
-      const hit = !(px+30<ex || px>ex+30 || py+30<ey || py>ey+30);
-      const stomp = (vy>1 && py+30>=ey && py+20<=ey);
-      if(hit){
-        if(stomp){
-          vy = JUMP*0.55;
-          o.hp -= 2;
-          if(o.hp<=0){
-            o.el.remove(); enemies.splice(idx,1);
-            enemyWaveRemaining=Math.max(0, enemyWaveRemaining-1);
-            score+=1; money+=ENEMY_TYPES[o.type].reward; updateHUD(); pickupBonus(ex+8, ey-8);
-            if(enemyWaveRemaining===0 && stage<STAGES.length-1){ setTimeout(()=>{ showToast('Onda controlada. Avance.'); nextStage(); }, 600); }
-          }
-        } else {
-          if(shields>0){ shields -= 1; showToast('Escudo absorveu o dano.'); }
-          else { score -= 1; showToast('Você sofreu dano (−1).'); }
-          updateHUD(); resetPlayer();
+      // inimigos
+      enemies.forEach((o,idx)=>{
+        o.x += o.vx;
+        o.el.style.left = o.x+'px';
+
+        const fill = o.el.querySelector('.hpbar>span');
+        if(fill){ fill.style.width = Math.max(0, (o.hp/o.maxhp*100))+'%'; }
+
+        // base
+        if(o.x <= 12){
+          enemyWaveRemaining = Math.max(0, enemyWaveRemaining-1);
+          o.el.remove(); enemies.splice(idx,1);
+          loseByBase(); return;
         }
-      }
-    });
 
-    // balas
-    bullets.forEach((b,bi)=>{
-      b.x += b.vx; b.el.style.left=b.x+'px';
-      enemies.forEach((o,ei)=>{
+        // torre
+        for(const t of turrets){
+          const tx=t.x, ty=t.y, tw=18, th=26;
+          const ex=o.x, ey=o.y;
+          if(!(ex+30<tx || ex>tx+tw || ey+30<ty || ey>ty+th)){ loseByTurret(); return; }
+        }
+
+        // jogador
         const ex=o.x, ey=o.y;
-        if(!(b.x+8<ex || b.x>ex+30 || b.y+4<ey || b.y>ey+30)){
-          o.hp -= b.dmg;
-          b.el.remove(); bullets.splice(bi,1);
-          if(o.hp<=0){
-            o.el.remove(); enemies.splice(ei,1);
-            enemyWaveRemaining=Math.max(0, enemyWaveRemaining-1);
-            score += 1; money += ENEMY_TYPES[o.type].reward; updateHUD();
-            if(enemyWaveRemaining===0 && stage<STAGES.length-1){ setTimeout(()=>{ showToast('Onda controlada. Avance.'); nextStage(); }, 600); }
+        const hit = !(px+30<ex || px>ex+30 || py+30<ey || py>ey+30);
+        const stomp = (vy>1 && py+30>=ey && py+20<=ey);
+        if(hit){
+          if(stomp){
+            vy = JUMP*0.55;
+            o.hp -= 2;
+            if(o.hp<=0){
+              o.el.remove(); enemies.splice(idx,1);
+              enemyWaveRemaining=Math.max(0, enemyWaveRemaining-1);
+              score+=1; money+=ENEMY_TYPES[o.type].reward; updateHUD(); pickupBonus(ex+8, ey-8);
+              if(enemyWaveRemaining===0 && stage<STAGES.length-1){
+                setTimeout(()=>{
+                  showToast('Onda controlada. Pausa para compras.');
+                  toggleShopPause(true); // pausa e habilita "Próxima etapa"
+                }, 600);
+              }
+            }
           } else {
-            const fill = o.el.querySelector('.hpbar>span');
-            if(fill){ fill.style.width = Math.max(0, (o.hp/o.maxhp*100))+'%'; }
+            if(shields>0){ shields -= 1; showToast('Escudo absorveu o dano.'); }
+            else { score -= 1; showToast('Você sofreu dano (−1).'); }
+            updateHUD(); resetPlayer();
           }
         }
       });
-      if(b.x>viewport.clientWidth){ b.el.remove(); bullets.splice(bi,1); }
-    });
+
+      // balas
+      bullets.forEach((b,bi)=>{
+        b.x += b.vx; b.el.style.left=b.x+'px';
+        enemies.forEach((o,ei)=>{
+          const ex=o.x, ey=o.y;
+          if(!(b.x+8<ex || b.x>ex+30 || b.y+4<ey || b.y>ey+30)){
+            o.hp -= b.dmg;
+            b.el.remove(); bullets.splice(bi,1);
+            if(o.hp<=0){
+              o.el.remove(); enemies.splice(ei,1);
+              enemyWaveRemaining=Math.max(0, enemyWaveRemaining-1);
+              score += 1; money += ENEMY_TYPES[o.type].reward; updateHUD();
+              if(enemyWaveRemaining===0 && stage<STAGES.length-1){
+                setTimeout(()=>{
+                  showToast('Onda controlada. Pausa para compras.');
+                  toggleShopPause(true);
+                }, 600);
+              } else {
+                const fill = o.el.querySelector('.hpbar>span');
+                if(fill){ fill.style.width = Math.max(0, (o.hp/o.maxhp*100))+'%'; }
+              }
+            }
+          }
+        });
+        if(b.x>viewport.clientWidth){ b.el.remove(); bullets.splice(bi,1); }
+      });
+    }
 
     rafId = requestAnimationFrame(step);
   };
@@ -464,6 +532,8 @@ function startLoop(){
 // ----------------------- Decisões -----------------------
 function handleChoice(which){
   const s=STAGES[stage]; const eff=s[which].effect||{}; overlay.style.display='none';
+  applyEffect(eff);
+  const risky=(which==='A');
 
   if(stage===STAGES.length-1){
     if(which==='A'){ resetGame(); return; }
@@ -482,10 +552,18 @@ function handleChoice(which){
     }
   }
 
-  applyEffect(eff);
-  const risky=(which==='A');
-  if(!risky){ setTimeout(()=> nextStage(), 420); }
-  else { if(!eff.enemies){ startWave(Math.max(2, 2+Math.floor(stage*0.5))); } }
+  if(!risky){
+    // antes de ir para a próxima etapa, pausa para compras
+    setTimeout(()=>{
+      showToast('Decisão segura. Pausa para compras.');
+      toggleShopPause(true);
+    }, 420);
+  } else {
+    // se a etapa arriscada não definiu wave explícita, crie uma leve
+    if(!eff.enemies){
+      startWave(Math.max(2, 2+Math.floor(stage*0.5)));
+    }
+  }
 }
 
 // ----------------------- Loja -----------------------
@@ -493,16 +571,17 @@ const buySpeed  = document.getElementById('buySpeed');
 const buyJump   = document.getElementById('buyJump');
 const buyTurret = document.getElementById('buyTurret');
 const buyShield = document.getElementById('buyShield');
+const equipTurret = document.getElementById('equipTurret');
 function tryBuy(cost, fn){ if(money < cost){ showToast('Dinheiro insuficiente.'); return; } money -= cost; updateHUD(); fn(); }
+
 buySpeed.onclick  = ()=> tryBuy(60, ()=>{ SPEED += 0.8; showToast('Velocidade +0.8'); });
 buyJump.onclick   = ()=> tryBuy(60, ()=>{ JUMP -= 2; showToast('Pulo +2'); });
 buyShield.onclick = ()=> tryBuy(40, ()=>{ shields += 1; updateHUD(); showToast('Escudo +1'); });
-buyTurret.onclick = ()=> tryBuy(120,()=>{ turretInventory += 1; updateHUD(); showToast('Torre adicionada ao inventário. Clique no campo para posicionar.'); });
+buyTurret.onclick = ()=> tryBuy(120,()=>{ turretInventory += 1; updateHUD(); showToast('Torre adicionada ao inventário.'); });
+equipTurret.onclick = ()=>{ placingTurretMode = true; showToast('Clique no campo para posicionar a torre'); };
 
 // ----------------------- Start -----------------------
-updateHUD();
-presentStage();   // <- garante que as PERGUNTAS aparecem ao abrir
-startLoop();      // <- garante que o LOOP inicia
+updateHUD(); presentStage(); startLoop();
 </script>
 </body>
 </html>
